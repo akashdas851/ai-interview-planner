@@ -10,11 +10,20 @@ const Login = () => {
 
     const [ email, setEmail ] = useState("")
     const [ password, setPassword ] = useState("")
+    const [ error, setError ] = useState("")
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        await handleLogin({email,password})
-        navigate('/')
+        setError("")
+        try {
+            const user = await handleLogin({email,password})
+            if(user) {
+                console.log("✅ Login successful, navigating to home...")
+                navigate('/')
+            }
+        } catch(err) {
+            setError(err.response?.data?.message || "Login failed. Please try again.")
+        }
     }
 
     if(loading){
@@ -26,20 +35,25 @@ const Login = () => {
         <main>
             <div className="form-container">
                 <h1>Login</h1>
+                {error && <div className="error-message" style={{color: 'red', marginBottom: '10px'}}>{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="input-group">
                         <label htmlFor="email">Email</label>
                         <input
                             onChange={(e) => { setEmail(e.target.value) }}
-                            type="email" id="email" name='email' placeholder='Enter email address' />
+                            type="email" id="email" name='email' placeholder='Enter email address' 
+                            required
+                        />
                     </div>
                     <div className="input-group">
                         <label htmlFor="password">Password</label>
                         <input
                             onChange={(e) => { setPassword(e.target.value) }}
-                            type="password" id="password" name='password' placeholder='Enter password' />
+                            type="password" id="password" name='password' placeholder='Enter password' 
+                            required
+                        />
                     </div>
-                    <button className='button primary-button' >Login</button>
+                    <button className='button primary-button' disabled={loading}>Login</button>
                 </form>
                 <p>Don't have an account? <Link to={"/register"} >Register</Link> </p>
             </div>

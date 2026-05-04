@@ -13,10 +13,15 @@ export const useAuth = () => {
     const handleLogin = async ({ email, password }) => {
         setLoading(true)
         try {
+            console.log("🔐 Attempting login with:", email)
             const data = await login({ email, password })
+            console.log("✅ Login successful, user:", data.user)
             setUser(data.user)
+            return data.user
         } catch (err) {
-
+            console.error("❌ Login failed:", err.response?.data || err.message)
+            alert("Login failed: " + (err.response?.data?.message || err.message))
+            throw err
         } finally {
             setLoading(false)
         }
@@ -25,10 +30,15 @@ export const useAuth = () => {
     const handleRegister = async ({ username, email, password }) => {
         setLoading(true)
         try {
+            console.log("📝 Attempting register with:", email)
             const data = await register({ username, email, password })
+            console.log("✅ Register successful, user:", data.user)
             setUser(data.user)
+            return data.user
         } catch (err) {
-
+            console.error("❌ Register failed:", err.response?.data || err.message)
+            alert("Registration failed: " + (err.response?.data?.message || err.message))
+            throw err
         } finally {
             setLoading(false)
         }
@@ -37,10 +47,12 @@ export const useAuth = () => {
     const handleLogout = async () => {
         setLoading(true)
         try {
+            console.log("👋 Logging out...")
             const data = await logout()
+            console.log("✅ Logout successful")
             setUser(null)
         } catch (err) {
-
+            console.error("❌ Logout failed:", err.response?.data || err.message)
         } finally {
             setLoading(false)
         }
@@ -50,10 +62,14 @@ export const useAuth = () => {
 
         const getAndSetUser = async () => {
             try {
-
+                console.log("🔄 Checking user session...")
                 const data = await getMe()
+                console.log("✅ User session found:", data.user)
                 setUser(data.user)
-            } catch (err) { } finally {
+            } catch (err) {
+                console.log("ℹ️ No active session")
+                setUser(null)
+            } finally {
                 setLoading(false)
             }
         }
